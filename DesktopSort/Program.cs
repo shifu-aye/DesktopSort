@@ -11,20 +11,21 @@ namespace DesktopSort
     {
         static void Main(string[] args)
         {
+
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            string folderName = "Sorted Desktop";
-            DirectorySearch(desktopPath, folderName);
+            string sortedDesktopFolderName = "Sorted Desktop";
+            DirectorySearch(desktopPath, sortedDesktopFolderName);
         }
 
         /// <summary>
         /// Поиск по папкам (The directory search)
         /// </summary>
         /// <param name="directoryPath">The directory path.</param>
-        static void DirectorySearch(string desktopPath, string folderName)
+        static void DirectorySearch(string desktopPath, string sortedDesktopFolderName)
         {
             try
             {
-                string folderPath = Path.Combine(desktopPath, folderName);
+                string folderPath = Path.Combine(desktopPath, sortedDesktopFolderName);
 
                 // Получаем список файлов в исходной папке с указанным типом
                 string[] files = Directory.EnumerateFiles(desktopPath).ToArray();
@@ -45,7 +46,24 @@ namespace DesktopSort
                 }
 
                 Console.WriteLine("Перемещение файлов завершено.");
-                Console.ReadLine();
+                string[] currentFiles = Directory.EnumerateFiles(folderPath).ToArray();
+                foreach (string file in currentFiles)
+                {
+                    string fileName = Path.GetFileName(file);
+                    string currentFileName = Path.GetFileName(file);
+                    string fileExtension = Path.GetExtension(file);
+
+                    // Создание папки с именем, содержащим информацию о типе файла
+                    string currentfolderName = fileExtension.TrimStart('.');
+                    string FileFolderPath = Path.Combine(folderPath, currentfolderName);
+                    Directory.CreateDirectory(FileFolderPath);
+
+                    // Перемещение файла в созданную папку
+                    string destinationFile = Path.Combine(FileFolderPath, fileName);
+                    File.Move(file, destinationFile);
+                }
+                Console.WriteLine("Сортировка завершена");
+                Console.ReadKey();
             }
             catch (Exception ex)
             {
